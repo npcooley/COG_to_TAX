@@ -29,7 +29,7 @@ else
   # ((ITERATION++))
   # echo "$ITERATION" >> Tracker_B.txt
   echo 'Iteration completed with missing results, restarting!' >> shorthandlogs.txt
-  date >> shorthandlogs
+  date >> shorthandlogs.txt
   exit 1
 fi
 

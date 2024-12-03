@@ -2,16 +2,16 @@ IDTaxa training sets from NCBI COGs
 ================
 Nicholas P. Cooley, Department of Biomedical Informatics, University of
 Pittsburgh
-2024-11-30
+2024-12-03
 
 # Building training sets for IDTaxa
 
-Annotation by definition relies on some knowledge base of training data.
+Annotation by definition relies on a knowledge base of training data.
 This repo contains a relatively uncomplicated scheme for creating
 training sets for the annotation tool IDTaxa. The code within relies on
 HTCondor, and is written to run smoothly on the open science grid, but
 is also general enough that a reasonable user should be able to use it
-as a starting point for a variety of tasks.
+as a template for a variety of tasks.
 
 There isn’t any magic to this process, a short DAG controls the entire
 process wherein a single node goes out to the NCBI and grabs a few files
@@ -37,7 +37,7 @@ In HTCondor’s language, this dag simply looks like:
 # the COG list
 # the tax dump
 
-# A is pretty simple, just trigger a job with pre and post scripts
+# A is simple, just trigger a job with pre and post scripts
 JOB A Plan/Plan.sub
 
 # Within the B subdag pre and post scripts manage success and planning of a 
@@ -49,12 +49,15 @@ SUBDAG EXTERNAL B Collection/Collection.dag
 # form training sets is going to depend a lot on the shape of the data that we collect
 SUBDAG EXTERNAL C Training/Training.dag
 
+# Define the node relationships
 PARENT A CHILD B
 PARENT B CHILD C
 
+# set retry bounds, this is not always necessary, but is often prudent
 RETRY B 3
 RETRY C 3
 
+# pre and post scripts for nodes triggered by this Manager
 SCRIPT PRE A Plan/PrePlanning.sh
 SCRIPT POST A Plan/PostPlanning.sh
 # this script exists solely to nuke the dag files that get generated so that we
@@ -64,8 +67,8 @@ SCRIPT POST A Plan/PostPlanning.sh
 # SCRIPT POST C PostTraining.sh
 ```
 
-The actual `Manager.dag` file is present in this repo along with the
-rest of the files related to running this workflow.
+The actual `Manager.dag` file is present in this `DAG` folder of this
+repo along with the rest of the files related to running this workflow.
 
 ## Manager
 
@@ -76,9 +79,13 @@ are subdags.
 
 ### Planning
 
-There are relatively well defined NCBI products that we can pull to plan
-this job. We can pull the taxdump and list of COGs directly from their
-respective homes on NCBI’s FTP site.
+There are well defined NCBI products that we can pull to plan this job.
+We can pull the
+[taxdump](https://ftp.ncbi.nih.gov/pub/taxonomy/new_taxdump/) and [list
+of COGs](https://ftp.ncbi.nlm.nih.gov/pub/COG/) directly from their
+respective homes on NCBI’s FTP site. The list of COGs is for defining
+what files we’re going to pull, while the taxdump allows us to construct
+meaningful taxonomies with the sequences we pull.
 
 ### Collection
 
@@ -91,11 +98,21 @@ that can occur with either the nodes themselves (difficulties talking to
 the NCBI) or with condor (usually data transfer, but sometimes container
 management).
 
+With more granularity, for each COG that we identify from the list we
+can grab the associated sequences using [edirect
+tools](https://www.ncbi.nlm.nih.gov/books/NBK179288/), and grab
+additional associated taxids for the sequence sources. With a little bit
+of conservative data munging we reduce the sequence set size to make the
+data more manageable and descriptive, and package it all for the next
+step.
+
 ### Training
 
 Currently under construction as the genres and types of training sets we
 want to construct will be determined by the structure of the COG data
-collected.
+collected. This step specifically will what users will likely be
+replacing should they use this workflow as a template for their own
+purposes.
 
 # Reproducibility
 

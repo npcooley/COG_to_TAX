@@ -21,12 +21,12 @@ SUBDAG EXTERNAL B Collection/Collection.dag
 PARENT A CHILD B
 # PARENT B CHILD C
 
-# we don't expect the actual flights released by the subdags to need these retry
+# we don't always expect the actual flights released by the subdags to need these retry
 # statements to perform their collections correctly, however they're good practice
 # just in case any individual job fails for whatever reason ... having the DAG
 # manage the retry statements is a little cleaner than having it happen within
 # the submit files
-# RETRY B 3
+RETRY B 3
 # RETRY C 3
 
 SCRIPT PRE A Plan/PrePlanning.sh
