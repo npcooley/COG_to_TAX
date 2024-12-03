@@ -27,7 +27,7 @@ Annotation by definition relies on a knowledge base of training data. This repo 
 
 There isn't any magic to this process, a short DAG controls the entire process wherein a single node goes out to the NCBI and grabs a few files to facilitate planning. A flight of nodes are planned to grab data for available COGs, and once that data is collected, it is all brought together and munged into a few different training sets.
 
-```{r, include = TRUE, echo = FALSE}
+```{r, include = TRUE, echo = FALSE, fig.align = 'center'}
 #| dev = c('png', 'pdf'), fig.width = 3.5, fig.height = 3.5, fig.align = "center",
 #| fig.cap = "Conceptual DAG structure"
 # Generate the DOT code for the flowchart
