@@ -1,0 +1,24 @@
+universe = vanilla
+executable = Plan/Plan.sh
+log = LogFilesA/out.1.log
+output = LogFilesA/out.1.out
+error = LogFilesA/out.1.err
+
+# Kernel version comes from major.minor.patch in the format:
+# major * 10000 + minor * 1000 + patch
+# SynExtend comes from r-base which uses debian:latest, which
+# as of 20190722 is "buster" from 4.19.105
+# as per advice, 31000 will keep jobs away from RHEL 6
+
+requirements = Arch == "X86_64" && HAS_SINGULARITY == True && OSG_HOST_KERNEL_VERSION >= 31000
+request_cpus = 1
+request_memory = 6GB
+request_disk = 6GB
+
++SingularityImage = "/cvmfs/singularity.opensciencegrid.org/npcooley/synextend:slim.1.20.0"
+
+transfer_input_files = Plan/Plan.R
+
+# no retry statements, this is a one shot job, let it fail if things get weird
+
+queue

@@ -1,0 +1,9 @@
+# Build and run the collection scheme for the indicated COGs
+
+# this dag does not exist until after the pre-script completes...
+SUBDAG EXTERNAL BA Collection/Run.dag
+
+SCRIPT PRE BA Collection/PreCollection.sh
+SCRIPT POST BA Collection/PostCollection.sh
+
+

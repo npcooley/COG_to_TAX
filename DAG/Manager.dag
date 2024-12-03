@@ -1,0 +1,39 @@
+# Overall manager!
+
+# we need to collect:
+# the COG list
+# the tax dump
+# and something else
+
+# A's pre and post script can live here because it's a one shot job that if it fails
+# we have bigger problems...
+JOB A Plan/Plan.sub
+
+# Within the B subdag pre and post scripts manage success and planning of a 
+# 'Run.dag' dag that triggers the actual jobs
+SUBDAG EXTERNAL B Collection/Collection.dag
+
+# this node is currently left blank because how we merge COGs and taxonomies to
+# form training sets is going to depend a lot on the shape of the data that we collect
+# SUBDAG EXTERNAL C Training/Training.dag
+
+# nothing fancy
+PARENT A CHILD B
+# PARENT B CHILD C
+
+# we don't expect the actual flights released by the subdags to need these retry
+# statements to perform their collections correctly, however they're good practice
+# just in case any individual job fails for whatever reason ... having the DAG
+# manage the retry statements is a little cleaner than having it happen within
+# the submit files
+# RETRY B 3
+# RETRY C 3
+
+SCRIPT PRE A Plan/PrePlanning.sh
+SCRIPT POST A Plan/PostPlanning.sh
+# this script exists solely to nuke the dag files that get generated so that we
+# keep the directory managable
+# SCRIPT POST B PostCollection.sh
+# SCRIPT POST C PostTraining.sh
+
+
