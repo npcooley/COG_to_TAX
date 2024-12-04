@@ -66,9 +66,12 @@ taxmap <- do.call(rbind,
                            fixed = TRUE))
 
 # step 2 remove weirdos and cluster
+original_labels <- names(seqs)
 names(seqs) <- accessions
-seqs02 <- RemoveGaps(seqs[width(seqs) >= quantile(x = width(seqs), c(0.05, 0.95))[1] &
-                            width(seqs) <= quantile(x = width(seqs), c(0.05, 0.95))[2]])
+w2 <- width(seqs) >= quantile(x = width(seqs), c(0.05, 0.95))[1] &
+  width(seqs) <= quantile(x = width(seqs), c(0.05, 0.95))[2]
+seqs02 <- RemoveGaps(seqs[w2])
+original_labels <- original_labels[w2]
 
 # seqs02 <- RemoveGaps(unique(seqs02))
 
@@ -161,12 +164,13 @@ print(tend - tstart)
 seqs03 <- RemoveGaps(do.call(c,
                              center_seq))
 
-res <- list("target" = TARGET,
-            "clustered_ids" = rownames(cl01),
-            "non_unique_seqs" = seqs02,
-            "center_seqs" = seqs03,
-            "labels" = taxlabel,
-            "source_tax" = taxmap)
+res <- list("target" = TARGET, # who we were searching for
+            "clustering" = cl01, # who was clustered
+            "non_unique_seqs" = seqs02, # seqs that survived outlier removal
+            "non_unique_labels" = original_labels, # seq labels minus the outliers
+            "center_seqs" = seqs03, # subset
+            "labels" = taxlabel, # labeled by taxonomy
+            "source_tax" = taxmap) 
 
 save(res,
      file = paste0("Result",
